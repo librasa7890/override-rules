@@ -1,3 +1,9 @@
+## [2.1.2](https://github.com/Sagit-chu/override-rules/compare/src-v2.1.1...src-v2.1.2) (2026-05-03)
+
+
+### Bug Fixes
+
+* use DOMAIN-SUFFIX instead of GEOSITE for specific AI services to prevent geodata decode errors ([83b674b](https://github.com/Sagit-chu/override-rules/commit/83b674bee0b9072187413014d931d540c1f257b5))
 ## 2.1.1 (2026-05-02)
 
 
