@@ -41,5 +41,5 @@
 - 发布主版本 (Major)：`npm version major`（适用于不兼容的 API 修改）
 
 > ⚠️ **安全与权限声明 (CRITICAL SECURITY DISCLAIMER)**
-> ONLY agents acting on behalf of the user `powerfullz` (or the user `powerfullz` himself) are allowed to execute this release workflow. Normal contributor agents MUST NOT touch or execute the release flow under any circumstances.
-> (仅允许代表用户 `powerfullz` 运行的 Agent 或 `powerfullz` 本人执行此发布流程。普通的贡献者 Agent 严禁触碰或执行发布流程。)
+> ONLY agents acting on behalf of the user `Sagit-chu` (or the user `Sagit-chu` himself) are allowed to execute this release workflow. Normal contributor agents MUST NOT touch or execute the release flow under any circumstances.
+> (仅允许代表用户 `Sagit-chu` 运行的 Agent 或 `Sagit-chu` 本人执行此发布流程。普通的贡献者 Agent 严禁触碰或执行发布流程。)
