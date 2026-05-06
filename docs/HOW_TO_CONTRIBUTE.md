@@ -1,6 +1,6 @@
 # 贡献指南 (HOW TO CONTRIBUTE)
 
-欢迎来到 `Sagit-chu/override-rules`！非常感谢你愿意为本项目贡献代码或新增特性。
+欢迎来到 `librasa7890/override-rules`！非常感谢你愿意为本项目贡献代码或新增特性。
 
 本指南旨在帮助人类开发者和 AI 助手（如需了解针对 AI 的特殊规范，也可参考 [`AGENTS.md`](../AGENTS.md)）快速熟悉本项目的开发工作流。
 
@@ -47,7 +47,7 @@
 
 > **⚠️ 注意**：普通贡献者无需处理版本发布。
 
-发布新版本（例如 `npm version patch/minor/major`）和创建 GitHub Releases 仅允许由项目维护者（`Sagit-chu`）或代表其运行的授权 AI Agent 操作。请在 PR 合并后交由维护者处理版本更新。
+发布新版本（例如 `npm version patch/minor/major`）和创建 GitHub Releases 仅允许由项目维护者（`librasa7890`）或代表其运行的授权 AI Agent 操作。请在 PR 合并后交由维护者处理版本更新。
 
 ---
 

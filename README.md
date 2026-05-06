@@ -1,6 +1,6 @@
-## Sagit-chu 的 Mihomo/Substore 覆写规则
+## librasa7890 的 Mihomo/Substore 覆写规则
 
-[![](https://data.jsdelivr.com/v1/package/gh/Sagit-chu/override-rules/badge?style=rounded)](https://www.jsdelivr.com/package/gh/Sagit-chu/override-rules)
+[![](https://data.jsdelivr.com/v1/package/gh/librasa7890/override-rules/badge?style=rounded)](https://www.jsdelivr.com/package/gh/librasa7890/override-rules)
 
 本仓库为 Mihomo/Substore 设计，提供高效、灵活的覆写规则（**不建议用于 Stash**）。核心特色如下：
 
@@ -13,7 +13,7 @@
 
 > 本项目为本人自用，欢迎交流建议（Issue/PR）。如无特殊反馈，将优先满足个人需求与体验优化。
 
-[点击访问 Forgejo 上的镜像](https://git.l3zc.com/Sagit-chu/override-rules)
+[点击访问 Forgejo 上的镜像](https://git.l3zc.com/librasa7890/override-rules)
 
 ### AFF
 
@@ -36,7 +36,7 @@
 > [!TIP]
 > Clash Party 不支持给脚本传入参数，如果需要传入参数，请使用集成的 Substore。
 
-1.  推荐直接使用 JS 动态覆写：`https://cdn.jsdelivr.net/gh/Sagit-chu/override-rules/convert.min.js`
+1.  推荐直接使用 JS 动态覆写：`https://cdn.jsdelivr.net/gh/librasa7890/override-rules/convert.min.js`
 2.  打开 Clash Party → 左侧「覆写」→ 粘贴上述链接导入。
 3.  打开「订阅管理」→ 目标订阅右上角三个点 → 「编辑信息」→ 选择该覆写脚本 → 保存。
 
@@ -77,19 +77,19 @@
 无特殊需求，直接在 Substore 「脚本操作」处填入脚本链接：
 
 ```
-https://cdn.jsdelivr.net/gh/Sagit-chu/override-rules/convert.min.js
+https://cdn.jsdelivr.net/gh/librasa7890/override-rules/convert.min.js
 ```
 
 有链式代理和多个节点提供商之间负载均衡的需求，使用`landing=true&loadbalance=true`两个参数：
 
 ```
-https://cdn.jsdelivr.net/gh/Sagit-chu/override-rules/convert.min.js#landing=true&loadbalance=true
+https://cdn.jsdelivr.net/gh/librasa7890/override-rules/convert.min.js#landing=true&loadbalance=true
 ```
 
 如果想第一时间体验最新加入的 ~~Bug~~ 功能，可以使用 preview 分支的 Github Raw 链接：
 
 ```
-https://raw.githubusercontent.com/Sagit-chu/override-rules/refs/heads/preview/convert.min.js
+https://raw.githubusercontent.com/librasa7890/override-rules/refs/heads/preview/convert.min.js
 ```
 
 ### 关于各 Mihomo 客户端覆盖 GeoIP/GeoSite 下载地址的说明
@@ -151,17 +151,17 @@ config_lb-{0|1}_landing-{0|1}_ipv6-{0|1}_full-{0|1}_keepalive-{0|1}_fakeip-{0|1}
 
 **获取示例（开启 full，其余关闭）：**
 ```text
-https://cdn.jsdelivr.net/gh/Sagit-chu/override-rules/yamls/config_lb-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0.yaml
+https://cdn.jsdelivr.net/gh/librasa7890/override-rules/yamls/config_lb-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0.yaml
 ```
 
 **固定版本获取示例：**
 ```text
-https://cdn.jsdelivr.net/gh/Sagit-chu/override-rules@v0.1.0/yamls/config_lb-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0.yaml
+https://cdn.jsdelivr.net/gh/librasa7890/override-rules@v0.1.0/yamls/config_lb-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0.yaml
 ```
 
 如果使用镜像：
 ```text
-https://git.l3zc.com/Sagit-chu/override-rules/raw/branch/dist/yamls/config_lb-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0.yaml
+https://git.l3zc.com/librasa7890/override-rules/raw/branch/dist/yamls/config_lb-0_landing-0_ipv6-0_full-1_keepalive-0_fakeip-0_quic-0.yaml
 ```
 
 *注：CI 仅套用了一份虚拟的 `fake_proxies.json` 来模拟生成 YAML，因此它无法像 JS 动态脚本那样根据你的实际节点智能生成专属分组策略，只能保守地包含常用的国家/地区。为了最高效的分流体验，仍强烈推荐使用 JS 覆写。*
