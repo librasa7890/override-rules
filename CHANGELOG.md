@@ -1,3 +1,9 @@
+## [2.1.5](https://github.com/librasa7890/override-rules/compare/src-v2.1.4...src-v2.1.5) (2026-05-09)
+
+
+### Bug Fixes
+
+* move AI domains above Google geosite rule to ensure matching ([dfa9274](https://github.com/librasa7890/override-rules/commit/dfa9274e88fb777e807171d0331b1abd9923f4ea))
 ## [2.1.4](https://github.com/librasa7890/override-rules/compare/src-v2.1.3...src-v2.1.4) (2026-05-09)
 
 
