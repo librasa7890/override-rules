@@ -1,3 +1,9 @@
+## [2.1.4](https://github.com/librasa7890/override-rules/compare/src-v2.1.3...src-v2.1.4) (2026-05-09)
+
+
+### Features
+
+* add Google NotebookLM domains to AI service group ([f2098ad](https://github.com/librasa7890/override-rules/commit/f2098adc814d3ec6e637498d3dc45d9acba98687))
 ## [2.1.3](https://github.com/librasa7890/override-rules/compare/src-v2.1.2...src-v2.1.3) (2026-05-04)
 ## [2.1.2](https://github.com/librasa7890/override-rules/compare/src-v2.1.1...src-v2.1.2) (2026-05-03)
 
