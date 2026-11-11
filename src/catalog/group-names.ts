@@ -18,6 +18,7 @@ export const PROXY_GROUPS = {
     AI_SERVICE: "AI服务",
     CRYPTO: "加密货币",
     FINANCE: "金融服务",
+    APPLE_AI: "苹果ai",
     APPLE: "苹果服务",
     GOOGLE: "谷歌服务",
     MICROSOFT: "微软服务",

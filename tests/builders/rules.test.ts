@@ -35,6 +35,60 @@ describe("buildRules", () => {
         }
     });
 
+    it("苹果 AI 域名优先于 CDN、通用 AI 和苹果规则且全部使用独立分组", () => {
+        const rules = buildRules({ quicEnabled: true, hasTailscale: false, adblockSource: 2 });
+        const domains = [
+            "gateway.icloud.com",
+            "apple-relay.apple.com",
+            "apple-relay.fastly-edge.com",
+            "apple-relay.cloudflare.com",
+            "guzzoni.apple.com",
+            "cp4.cloudflare.com",
+            "gspe1-ssl.ls.apple.com",
+            "smoot.apple.com",
+            "apple-relay.akamaized.net",
+            "apple-relay.mask.apple-dns.net",
+            "api-siri-prod.apple.com",
+        ];
+        const broaderRules = [
+            "RULE-SET,StaticResources,静态资源",
+            "RULE-SET,CDNResources,静态资源",
+            "RULE-SET,AdditionalCDNResources,静态资源",
+            "GEOSITE,category-ai-!cn,AI服务",
+            "GEOSITE,apple,苹果服务",
+        ];
+        assert.equal(rules.filter((rule) => rule.endsWith(",苹果ai")).length, domains.length);
+        for (const domain of domains) {
+            const index = rules.indexOf(`DOMAIN-SUFFIX,${domain},苹果ai`);
+            assert.ok(index >= 0, `${domain} 缺少苹果 AI 分流规则`);
+            for (const broaderRule of broaderRules) {
+                assert.ok(
+                    index < rules.indexOf(broaderRule),
+                    `${domain} 必须优先于 ${broaderRule}`
+                );
+            }
+        }
+    });
+
+    it("保留已有 AI 域名分流且优先于通用 Google 规则", () => {
+        const rules = buildRules({ quicEnabled: true, hasTailscale: false, adblockSource: 0 });
+        for (const domain of [
+            "openai.com",
+            "chatgpt.com",
+            "oaistatic.com",
+            "oaiusercontent.com",
+            "anthropic.com",
+            "claude.ai",
+            "notebooklm.google",
+            "notebooklm.google.com",
+            "notebooklm.googleapis.com",
+        ]) {
+            const index = rules.indexOf(`DOMAIN-SUFFIX,${domain},AI服务`);
+            assert.ok(index >= 0);
+            assert.ok(index < rules.indexOf("GEOSITE,google,谷歌服务"));
+        }
+    });
+
     it("以 MATCH 收尾", () => {
         const rules = buildRules({ quicEnabled: true, hasTailscale: false, adblockSource: 0 });
         assert.equal(rules.at(-1), "MATCH,Final");

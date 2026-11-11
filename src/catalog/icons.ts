@@ -28,6 +28,7 @@ export const ICONS = {
     aiService: `${QURE}/ChatGPT.png`,
     crypto: `${QURE}/Cryptocurrency_1.png`,
     finance: `${SELF}/Nasdaq.png`,
+    appleAi: `${QURE}/Apple_2.png`,
     apple: `${QURE}/Apple_2.png`,
     google: `${MINI}/Google.png`,
     microsoft: `${SELF}/Microsoft_Copilot.png`,

@@ -52,6 +52,21 @@ describe("assembleConfig", () => {
         );
     });
 
+    it("分组和展平模式均输出独立的苹果 AI 组并纳入 GLOBAL", () => {
+        for (const args of [{}, { regex: "true" }]) {
+            for (const config of [CONFIG, { proxies: [{ name: "NodeA" }] }]) {
+                const result = run(args, config);
+                const appleAi = group(result, "苹果ai");
+                assert.equal(appleAi?.type, "select");
+                assert.ok(appleAi?.icon);
+                assert.deepEqual(appleAi?.proxies, group(result, PROXY_GROUPS.APPLE)?.proxies);
+                assert.ok(group(result, PROXY_GROUPS.GLOBAL)?.proxies?.includes("苹果ai"));
+                const targets = result.rules?.filter((rule) => rule.endsWith(",苹果ai"));
+                assert.equal(targets?.length, 11);
+            }
+        }
+    });
+
     it("保留上游 proxies 与 hosts", () => {
         const result = run({}, CONFIG);
         assert.deepEqual(result.proxies, CONFIG.proxies);

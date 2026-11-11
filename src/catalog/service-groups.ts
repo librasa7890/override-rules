@@ -60,6 +60,11 @@ export const serviceGroups: ServiceGroupDef[] = [
         proxies: (ctx) => ctx.lists.defaultProxiesDirect,
     },
     {
+        name: PROXY_GROUPS.APPLE_AI,
+        icon: ICONS.appleAi,
+        proxies: (ctx) => ctx.lists.defaultProxies,
+    },
+    {
         name: PROXY_GROUPS.APPLE,
         icon: ICONS.apple,
         proxies: (ctx) => ctx.lists.defaultProxies,
