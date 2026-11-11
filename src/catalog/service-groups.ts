@@ -17,6 +17,8 @@ export interface ServiceGroupDef {
     icon: string;
     /** 是否附加 `include-all: true`。 */
     includeAll?: boolean;
+    /** 是否补充「选择代理」和「自动选择」入口，默认启用。 */
+    includeMainSelectors?: boolean;
     /** 根据构建上下文返回候选代理列表。 */
     proxies: (ctx: GroupBuildContext) => ProxyGroupCandidate[];
 }
@@ -183,6 +185,7 @@ export const serviceGroups: ServiceGroupDef[] = [
     {
         name: PROXY_GROUPS.SOGOU_INPUT,
         icon: ICONS.sogouInput,
+        includeMainSelectors: false,
         proxies: () => ["DIRECT", "REJECT"],
     },
 ];

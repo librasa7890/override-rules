@@ -56,9 +56,20 @@ function buildFrontGroups(ctx: GroupBuildContext): Array<ProxyGroup | null> {
 
 /** 由声明式目录生成的服务代理组。 */
 function buildServiceGroups(ctx: GroupBuildContext): ProxyGroup[] {
-    return serviceGroups.map((def) =>
-        selectGroup(def.name, def.icon, def.proxies(ctx), def.includeAll && ctx.flags.regexFilter)
-    );
+    return serviceGroups.map((def) => {
+        const candidates = def.proxies(ctx);
+        // 统一补齐入口，覆盖展平模式和地区专用列表；保留原有默认候选及其顺序。
+        const proxies =
+            def.includeMainSelectors === false
+                ? candidates
+                : [
+                      ...candidates,
+                      ...[PROXY_GROUPS.SELECT, PROXY_GROUPS.AUTO].filter(
+                          (name) => !candidates.includes(name)
+                      ),
+                  ];
+        return selectGroup(def.name, def.icon, proxies, def.includeAll && ctx.flags.regexFilter);
+    });
 }
 
 /** 尾部固定代理组：Tailscale、广告拦截、Final、自动选择、故障转移。 */
@@ -80,7 +91,11 @@ function buildTailGroups(ctx: GroupBuildContext): Array<ProxyGroup | null> {
             false,
             ctx.flags.adblockSource === 0
         ),
-        selectGroup(PROXY_GROUPS.FINAL, ICONS.final, [PROXY_GROUPS.SELECT, "DIRECT"]),
+        selectGroup(PROXY_GROUPS.FINAL, ICONS.final, [
+            PROXY_GROUPS.SELECT,
+            "DIRECT",
+            PROXY_GROUPS.AUTO,
+        ]),
         urlTestGroup(PROXY_GROUPS.AUTO, ICONS.auto, ctx.lists.defaultFallback),
         fallbackGroup(PROXY_GROUPS.FALLBACK, ICONS.fallback, ctx.lists.defaultFallback),
     ];
