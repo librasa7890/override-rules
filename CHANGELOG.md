@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.11.1](https://github.com/librasa7890/override-rules/compare/src-v2.11.0...src-v2.11.1) (2026-11-11)
+
+
+### Bug Fixes
+
+- Restore main and automatic selectors in service groups ([ca31a23](https://github.com/librasa7890/override-rules/commit/ca31a23c337061a03ee119fcb3855c8e57e8541b))
+
+
+### Documentation
+
+- Document restored service group selector options ([82d3b28](https://github.com/librasa7890/override-rules/commit/82d3b28c8af6c16a7febe6980b5e6758424d0d12))
 ## [2.11.0](https://github.com/librasa7890/override-rules/compare/src-v2.1.5...src-v2.11.0) (2026-11-11)
 
 
