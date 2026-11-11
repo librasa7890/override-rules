@@ -58,13 +58,13 @@ function buildFlattenedBaseLists({
 }: FlattenedListsInput): BaseLists {
     // 展平模式下「选择代理」已直接列出全部非落地节点
     // 因此不再生成「手动选择」组，也不再在候选列表中引用它。
-    // 展平模式下服务组也不再引用「选择代理」，而是与 SELECT 共用同一份展平节点来源，
-    // 避免服务组仍然停留在「引用一个已展平的组」的中间状态。
+    // 服务组保留同一份展平节点来源；主选择入口由服务组构建阶段统一补充。
     const defaultSelector: ProxyGroupCandidate[] = buildList<ProxyGroupCandidate>(
         landing && PROXY_GROUPS.LANDING,
         flattenedNodeSource,
         hasLowCost && PROXY_GROUPS.LOW_COST,
-        "DIRECT"
+        "DIRECT",
+        PROXY_GROUPS.AUTO
     );
 
     // 这里允许返回空列表，最终由 `domain/proxy-group.ts` 的构造工厂补 `DIRECT`。

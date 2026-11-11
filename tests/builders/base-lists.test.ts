@@ -23,7 +23,7 @@ describe("buildBaseLists", () => {
         const lists = buildBaseLists(buildInput());
 
         assert.deepEqual(lists.defaultFallback, []);
-        assert.deepEqual(lists.defaultSelector, ["DIRECT"]);
+        assert.deepEqual(lists.defaultSelector, ["DIRECT", PROXY_GROUPS.AUTO]);
         assert.deepEqual(lists.defaultProxies, ["DIRECT"]);
         assert.deepEqual(lists.defaultProxiesDirect, ["DIRECT"]);
         assert.deepEqual(lists.frontProxySelector, ["DIRECT"]);
@@ -76,7 +76,11 @@ describe("buildBaseLists", () => {
             })
         );
 
-        assert.deepEqual(lists.defaultSelector, [{ proxies: ["香港01", "香港02"] }, "DIRECT"]);
+        assert.deepEqual(lists.defaultSelector, [
+            { proxies: ["香港01", "香港02"] },
+            "DIRECT",
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.deepEqual(lists.defaultFallback, [{ proxies: ["香港01", "香港02"] }]);
         assert.deepEqual(lists.defaultProxies, [{ proxies: ["香港01", "香港02"] }, "DIRECT"]);
         assert.deepEqual(lists.defaultProxiesDirect, ["DIRECT", { proxies: ["香港01", "香港02"] }]);
@@ -112,6 +116,7 @@ describe("buildBaseLists", () => {
             { "include-all": true, "exclude-filter": "^(?:落地A)$" },
             PROXY_GROUPS.LOW_COST,
             "DIRECT",
+            PROXY_GROUPS.AUTO,
         ]);
         assert.deepEqual(lists.defaultProxies, [
             PROXY_GROUPS.LANDING,
@@ -142,6 +147,7 @@ describe("buildBaseLists", () => {
             PROXY_GROUPS.LANDING,
             PROXY_GROUPS.LOW_COST,
             "DIRECT",
+            PROXY_GROUPS.AUTO,
         ]);
         assert.deepEqual(lists.defaultFallback, [PROXY_GROUPS.LANDING]);
         assert.deepEqual(lists.defaultProxies, [

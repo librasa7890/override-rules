@@ -8,6 +8,7 @@ import { assembleConfig } from "../../src/builders/config";
 import { buildProxyGroups } from "../../src/builders/proxy-groups";
 import { PROXY_GROUPS } from "../../src/catalog/group-names";
 import { ruleSets } from "../../src/catalog/rule-sets";
+import { serviceGroups } from "../../src/catalog/service-groups";
 import type { ClashConfig } from "../../src/types/clash";
 import type { ProxyGroup } from "../../src/types/proxy";
 import type { ScriptArgs } from "../../src/types/args";
@@ -67,6 +68,57 @@ describe("assembleConfig", () => {
         }
     });
 
+    it("所有代理服务组在分组、展平和 regex 模式均可选择主代理与自动选择", () => {
+        const configs: ClashConfig[] = [
+            { proxies: [{ name: "NodeA" }] },
+            { proxies: [] },
+            { proxies: [{ name: "落地A", "dialer-proxy": "前置代理" }] },
+            {
+                proxies: ["香港01", "香港02", "台湾01", "台湾02", "美国01", "美国02"].map(
+                    (name) => ({ name })
+                ),
+            },
+        ];
+        for (const args of [{}, { regex: "true" }]) {
+            for (const config of configs) {
+                const result = run(args, config);
+                for (const service of serviceGroups.filter(
+                    (item) => item.name !== PROXY_GROUPS.SOGOU_INPUT
+                )) {
+                    const candidates = group(result, service.name)?.proxies ?? [];
+                    for (const target of [PROXY_GROUPS.SELECT, PROXY_GROUPS.AUTO]) {
+                        assert.equal(
+                            candidates.filter((item) => item === target).length,
+                            1,
+                            `${service.name} 必须提供且仅提供一个 ${target}`
+                        );
+                    }
+                }
+                assert.equal(
+                    group(result, PROXY_GROUPS.SELECT)?.proxies?.filter(
+                        (name) => name === PROXY_GROUPS.AUTO
+                    ).length,
+                    1
+                );
+                assert.ok(group(result, PROXY_GROUPS.FINAL)?.proxies?.includes(PROXY_GROUPS.AUTO));
+                assert.deepEqual(group(result, PROXY_GROUPS.SOGOU_INPUT)?.proxies, [
+                    "DIRECT",
+                    "REJECT",
+                ]);
+                const groups = result["proxy-groups"] ?? [];
+                const byName = new Map(groups.map((item) => [item.name, item]));
+                function checkAcyclic(name: string, path: Set<string>): void {
+                    assert.ok(!path.has(name), `代理组循环引用: ${[...path, name].join(" → ")}`);
+                    const nextPath = new Set([...path, name]);
+                    for (const candidate of byName.get(name)?.proxies ?? []) {
+                        if (byName.has(candidate)) checkAcyclic(candidate, nextPath);
+                    }
+                }
+                for (const item of groups) checkAcyclic(item.name, new Set());
+            }
+        }
+    });
+
     it("保留上游 proxies 与 hosts", () => {
         const result = run({}, CONFIG);
         assert.deepEqual(result.proxies, CONFIG.proxies);
@@ -94,23 +146,38 @@ describe("assembleConfig", () => {
         const result = run({}, { proxies: [{ name: "NodeA" }, { name: "NodeB" }] });
 
         // 展平后没有 AUTO / FALLBACK 的相互嵌套，也不再生成「手动选择」组。
-        assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, ["NodeA", "NodeB", "DIRECT"]);
+        assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, [
+            "NodeA",
+            "NodeB",
+            "DIRECT",
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.deepEqual(group(result, PROXY_GROUPS.AUTO)?.proxies, ["NodeA", "NodeB"]);
         assert.deepEqual(group(result, PROXY_GROUPS.FALLBACK)?.proxies, ["NodeA", "NodeB"]);
         assert.equal(group(result, PROXY_GROUPS.MANUAL), undefined);
 
-        // 服务组也直接使用展平节点，不再引用「选择代理」。
-        assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, ["NodeA", "NodeB", "DIRECT"]);
+        // 服务组保留展平节点，并补充主选择入口。
+        assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, [
+            "NodeA",
+            "NodeB",
+            "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.deepEqual(group(result, PROXY_GROUPS.FINANCE)?.proxies, [
             "DIRECT",
             "NodeA",
             "NodeB",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
         // 没有低倍率组时，静态资源组保持正常顺序。
         assert.deepEqual(group(result, PROXY_GROUPS.STATIC_RESOURCES)?.proxies, [
             "NodeA",
             "NodeB",
             "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
     });
 
@@ -135,6 +202,7 @@ describe("assembleConfig", () => {
             "美国节点",
             PROXY_GROUPS.MANUAL,
             "DIRECT",
+            PROXY_GROUPS.AUTO,
         ]);
         // 其他服务组仍保持正常顺序，低倍率组只移动一次。
         assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, [
@@ -144,6 +212,7 @@ describe("assembleConfig", () => {
             PROXY_GROUPS.LOW_COST,
             PROXY_GROUPS.MANUAL,
             "DIRECT",
+            PROXY_GROUPS.AUTO,
         ]);
     });
 
@@ -155,12 +224,16 @@ describe("assembleConfig", () => {
             "NodeA",
             "NodeB 0.2x 大流量",
             "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
         assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, [
             "NodeA",
             "NodeB 0.2x 大流量",
             PROXY_GROUPS.LOW_COST,
             "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
     });
 
@@ -168,12 +241,23 @@ describe("assembleConfig", () => {
         const result = run({}, { proxies: [] });
         const groups = result["proxy-groups"] ?? [];
 
-        assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, ["DIRECT"]);
+        assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, [
+            "DIRECT",
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.equal(group(result, PROXY_GROUPS.MANUAL), undefined);
         assert.deepEqual(group(result, PROXY_GROUPS.AUTO)?.proxies, ["DIRECT"]);
         assert.deepEqual(group(result, PROXY_GROUPS.FALLBACK)?.proxies, ["DIRECT"]);
-        assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, ["DIRECT"]);
-        assert.deepEqual(group(result, PROXY_GROUPS.FINANCE)?.proxies, ["DIRECT"]);
+        assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, [
+            "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
+        ]);
+        assert.deepEqual(group(result, PROXY_GROUPS.FINANCE)?.proxies, [
+            "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
+        ]);
 
         for (const item of groups) {
             if (item.proxies) {
@@ -190,16 +274,21 @@ describe("assembleConfig", () => {
         assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, [
             PROXY_GROUPS.LANDING,
             "DIRECT",
+            PROXY_GROUPS.AUTO,
         ]);
         assert.deepEqual(group(result, PROXY_GROUPS.FALLBACK)?.proxies, [PROXY_GROUPS.LANDING]);
         assert.equal(group(result, PROXY_GROUPS.MANUAL), undefined);
         assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, [
             PROXY_GROUPS.LANDING,
             "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
         assert.deepEqual(group(result, PROXY_GROUPS.FINANCE)?.proxies, [
             "DIRECT",
             PROXY_GROUPS.LANDING,
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
     });
 
@@ -226,11 +315,19 @@ describe("assembleConfig", () => {
         const google = group(result, PROXY_GROUPS.GOOGLE);
         assert.equal(google?.["include-all"], true);
         assert.equal(google?.["exclude-filter"], "^(?:落地A)$");
-        assert.deepEqual(google?.proxies, [PROXY_GROUPS.LANDING, PROXY_GROUPS.LOW_COST, "DIRECT"]);
+        assert.deepEqual(google?.proxies, [
+            PROXY_GROUPS.LANDING,
+            PROXY_GROUPS.LOW_COST,
+            "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.deepEqual(group(result, PROXY_GROUPS.FINANCE)?.proxies, [
             "DIRECT",
             PROXY_GROUPS.LANDING,
             PROXY_GROUPS.LOW_COST,
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
     });
 
@@ -243,16 +340,20 @@ describe("assembleConfig", () => {
             "台湾01",
             "台湾02",
             "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
         assert.deepEqual(group(result, PROXY_GROUPS.BILIBILI)?.proxies, [
             "DIRECT",
             "台湾01",
             "台湾02",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
         assert.ok(!group(result, PROXY_GROUPS.BAHAMUT)?.proxies?.includes("台湾节点"));
         assert.ok(!group(result, PROXY_GROUPS.BILIBILI)?.proxies?.includes("台湾节点"));
-        assert.ok(!group(result, PROXY_GROUPS.BAHAMUT)?.proxies?.includes(PROXY_GROUPS.SELECT));
-        assert.ok(!group(result, PROXY_GROUPS.BILIBILI)?.proxies?.includes(PROXY_GROUPS.SELECT));
+        assert.ok(group(result, PROXY_GROUPS.BAHAMUT)?.proxies?.includes(PROXY_GROUPS.SELECT));
+        assert.ok(group(result, PROXY_GROUPS.BILIBILI)?.proxies?.includes(PROXY_GROUPS.SELECT));
     });
 
     it("只有美国时 Truth Social 不引用未生成的地区组", () => {
@@ -263,11 +364,11 @@ describe("assembleConfig", () => {
             "美国01",
             "美国02",
             "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
         ]);
         assert.ok(!group(result, PROXY_GROUPS.TRUTH_SOCIAL)?.proxies?.includes("美国节点"));
-        assert.ok(
-            !group(result, PROXY_GROUPS.TRUTH_SOCIAL)?.proxies?.includes(PROXY_GROUPS.SELECT)
-        );
+        assert.ok(group(result, PROXY_GROUPS.TRUTH_SOCIAL)?.proxies?.includes(PROXY_GROUPS.SELECT));
     });
 
     it("regex=true 时手动选择组使用 include-all，不枚举节点名称", () => {
@@ -328,10 +429,19 @@ describe("assembleConfig", () => {
         );
 
         assert.equal(group(result, PROXY_GROUPS.MANUAL), undefined);
-        assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, ["香港01", "DIRECT"]);
+        assert.deepEqual(group(result, PROXY_GROUPS.SELECT)?.proxies, [
+            "香港01",
+            "DIRECT",
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.deepEqual(group(result, PROXY_GROUPS.AUTO)?.proxies, ["香港01"]);
         assert.deepEqual(group(result, PROXY_GROUPS.FALLBACK)?.proxies, ["香港01"]);
-        assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, ["香港01", "DIRECT"]);
+        assert.deepEqual(group(result, PROXY_GROUPS.GOOGLE)?.proxies, [
+            "香港01",
+            "DIRECT",
+            PROXY_GROUPS.SELECT,
+            PROXY_GROUPS.AUTO,
+        ]);
         assert.equal(group(result, PROXY_GROUPS.TAILSCALE)?.hidden, true);
     });
 
