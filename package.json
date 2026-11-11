@@ -1,45 +1,57 @@
 {
   "name": "override-rules",
   "private": true,
-  "version": "2.1.5",
+  "version": "2.10.1",
   "description": "Override rules YAML generator",
   "license": "MIT",
   "type": "commonjs",
   "scripts": {
-    "typecheck": "tsgo --noEmit",
-    "build": "npm run typecheck && tsx build.ts",
-    "generate": "tsx yaml_generator/generator.ts",
+    "typecheck": "node node_modules/typescript-native/bin/tsc --noEmit",
+    "build": "npm run typecheck && node scripts/build.mjs",
+    "generate": "tsx scripts/yaml_generator/generator.ts",
+    "test": "node --import tsx --test \"tests/**/*.test.ts\"",
     "artifacts": "npm run build && npm run generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "knip": "knip",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test:cov": "c8 --all --include 'src/**/*.ts' --include 'scripts/yaml_generator/**/*.ts' --reporter=text --reporter=text-summary --reporter=html node --import tsx --test \"tests/**/*.test.ts\"",
+    "audit": "npm audit --omit=dev",
     "prepare": "husky",
     "preversion": "npm run lint && npm run typecheck",
-    "version": "conventional-changelog -p angular -t src-v -i CHANGELOG.md -s && git add CHANGELOG.md",
+    "version": "node scripts/changelog.mjs && git add CHANGELOG.md",
     "postversion": "git push --follow-tags"
   },
   "dependencies": {
-    "yaml": "^2.5.0"
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.6.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260426.1",
-    "conventional-changelog-cli": "^5.0.0",
-    "esbuild": "^0.28.0",
-    "eslint": "^10.0.2",
+    "@types/node": "^26.2.0",
+    "c8": "^12.0.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-sonarjs": "^4.2.2",
+    "git-cliff": "^2.13.1",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "prettier": "^3.8.1",
-    "tsx": "^4.20.6",
+    "knip": "^6.44.2",
+    "lint-staged": "^17.5.1",
+    "prettier": "^3.9.7",
+    "tsx": "^4.23.13",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.0"
+    "typescript-eslint": "^8.70.0",
+    "typescript-native": "npm:typescript@^7.0.2"
   },
   "lint-staged": {
     "*.{ts,js,json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
