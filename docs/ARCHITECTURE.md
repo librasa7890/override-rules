@@ -106,6 +106,10 @@ flowchart TD
 - **空代理组兜底集中管理**：`selectors.ts` 只负责生成候选列表，允许出现空列表；`domain/proxy-group.ts` 的 `normalizeNodeSource()`（以及经其处理的 `buildGroupByType()`）在既无显式 `proxies` 又未启用 `include-all` 时统一补入 `DIRECT`，确保最终不会输出空组。
 - **类型按域拆分**：`types/args.ts`、`types/proxy.ts`、`types/clash.ts` 各自独立，避免单文件成为全局改动的耦合点。
 
+### 苹果 AI 分流
+
+「苹果ai」通过 `catalog/group-names.ts`、`catalog/icons.ts` 与 `catalog/service-groups.ts` 注册为独立服务组，使用默认代理候选。`builders/rules.ts` 中的 11 条 AppleIntelligence `DOMAIN-SUFFIX` 规则（2026-09-17）排在 CDN、通用 AI 与 `GEOSITE,apple` 规则之前，确保这些域名及其子域名优先分流到「苹果ai」。其他苹果流量仍交给「苹果服务」。JS 与静态 YAML 共用此配置。
+
 ### 落地/非落地自动检测
 
 `dialer-proxy` 在 Clash 链式代理中表示当前节点通过指定代理拨号。脚本据此自动区分：

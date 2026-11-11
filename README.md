@@ -17,6 +17,28 @@
 
 [点击访问 Forgejo 上的镜像](https://git.l3zc.com/librasa7890/override-rules)
 
+### 苹果 AI 分流
+
+新增独立的「苹果ai」选择组，可在客户端中单独选择代理节点或地区，候选与「苹果服务」组一致。
+
+AppleIntelligence 规则更新于 2026-09-17，以下 11 个域名及其子域名均分流到「苹果ai」，并优先于静态资源、通用 AI 和苹果服务规则匹配：
+
+```text
+gateway.icloud.com
+apple-relay.apple.com
+apple-relay.fastly-edge.com
+apple-relay.cloudflare.com
+guzzoni.apple.com
+cp4.cloudflare.com
+gspe1-ssl.ls.apple.com
+smoot.apple.com
+apple-relay.akamaized.net
+apple-relay.mask.apple-dns.net
+api-siri-prod.apple.com
+```
+
+JS 动态覆写与静态 YAML 均包含此分组。更新覆写配置后即可使用；其他苹果流量继续按「苹果服务」规则处理。
+
 ### AFF
 
 #### FlowerCloud
