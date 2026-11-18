@@ -40,7 +40,7 @@ export function buildFeatureFlags(args: ScriptArgs): FeatureFlags {
 export const ARG_DEFAULTS = {
     groupType: 1, // 0=select，1=url-test，2=load-balance
     countryThreshold: 2,
-    fakeIPEnabled: true,
+    fakeIPEnabled: false,
 } as const;
 ```
 

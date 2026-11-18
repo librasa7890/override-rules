@@ -154,7 +154,7 @@ flowchart TD
 所有 URL 参数都有明确的默认值，集中在 `src/args/schema.ts` 的 `ARG_DEFAULTS`，由 `buildFeatureFlags()` 解析并回填。当前默认值包括：
 
 - `grouptype=1`（`url-test`）；若未指定 `grouptype`，仍兼容旧的 `loadbalance` 参数；
-- `fakeip=true`；
+- `fakeip=false`（`redir-host`）；
 - `threshold=2`，少于两个节点的地区不会生成地区组；过滤后不足 2 个地区时整体展平；
 - `ipv6`、`full`、`keepalive`、`quic`、`regex`、`tun` 默认关闭。
 
