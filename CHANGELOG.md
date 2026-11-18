@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.11.2](https://github.com/librasa7890/override-rules/compare/src-v2.11.1...src-v2.11.2) (2026-11-18)
+
+
+### Bug Fixes
+
+- Default DNS to redir-host ([f849b53](https://github.com/librasa7890/override-rules/commit/f849b539e9a5ffb1db0baab30fdcb2aea46e6a3e))
+
+
+### Documentation
+
+- Document the redir-host default ([36747c9](https://github.com/librasa7890/override-rules/commit/36747c9b41274693726efee8d25200de1d026d9b))
 ## [2.11.1](https://github.com/librasa7890/override-rules/compare/src-v2.11.0...src-v2.11.1) (2026-11-11)
 
 
