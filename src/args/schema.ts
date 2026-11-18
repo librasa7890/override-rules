@@ -15,7 +15,7 @@ export const ARG_DEFAULTS = {
     /** 启用 TCP keep-alive。 */
     keepAliveEnabled: false,
     /** 使用 fake-ip 增强模式。 */
-    fakeIPEnabled: true,
+    fakeIPEnabled: false,
     /** 允许 QUIC（UDP 443）流量。 */
     quicEnabled: false,
     /** 使用正则过滤模式。 */

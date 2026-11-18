@@ -10,7 +10,7 @@ https://github.com/librasa7890/override-rules
 - tun: 启用 TUN 模式（默认 false）
 - full: 输出完整配置（适合纯内核启动，默认 false）
 - keepalive: 启用 tcp-keep-alive（默认 false）
-- fakeip: DNS 使用 FakeIP 模式（默认 true；传 false 时为 RedirHost）
+- fakeip: 启用 Fake-IP DNS 模式（默认 false，使用 redir-host）
 - quic: 允许 QUIC 流量（UDP 443，默认 false）
 - threshold: 地区节点数量小于该值时不显示分组（默认 2）
 - regex: 使用正则过滤模式（include-all + filter）写入各地区代理组，而非直接枚举节点名称（默认 false）
