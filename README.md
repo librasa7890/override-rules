@@ -86,7 +86,7 @@ JS 动态覆写与静态 YAML 均包含此分组。更新覆写配置后即可�
 *   `ipv6`：启用 IPv6 支持（默认 false）
 *   `full`：生成完整配置（适合纯内核启动，默认 false）
 *   `keepalive`：启用 TCP Keep Alive（默认 false）[^fn2]
-*   `fakeip`：DNS 增强模式使用 `fake-ip` 而不是 `redir-host`（开启后可能有助于解决 TUN 模式无法上网的问题；未传参时默认 `true`，显式传 `false` 时使用 `redir-host`）
+*   `fakeip`：默认 `false`，DNS 使用 `redir-host`。设为 `true` 时启用 `fake-ip`。
 *   `quic`：允许 QUIC 流量（UDP 443，默认 false）[^quic]
 *   `regex`：各国家/地区代理组与分组模式下的「手动选择」组改用 `include-all` 模式，由 Mihomo 内核在运行时动态填充节点（地区组再附加正则 `filter`）；展平模式下的各服务组也直接使用同一套展平节点候选（`regex=true` 时为 `include-all`，并通过 `exclude-filter` 排除落地节点与 Tailscale 节点），而非在脚本执行时枚举节点名称（默认 false）[^regex]
 *   `tun`：启用 TUN 模式（gvisor 栈，自动配置路由排除地址与 DNS 劫持，默认 false）

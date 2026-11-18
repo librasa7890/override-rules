@@ -12,7 +12,7 @@ describe("buildFeatureFlags", () => {
         assert.equal(flags.ipv6Enabled, ARG_DEFAULTS.ipv6Enabled);
         assert.equal(flags.fullConfig, ARG_DEFAULTS.fullConfig);
         assert.equal(flags.keepAliveEnabled, ARG_DEFAULTS.keepAliveEnabled);
-        assert.equal(flags.fakeIPEnabled, ARG_DEFAULTS.fakeIPEnabled);
+        assert.equal(flags.fakeIPEnabled, false);
         assert.equal(flags.quicEnabled, ARG_DEFAULTS.quicEnabled);
         assert.equal(flags.regexFilter, ARG_DEFAULTS.regexFilter);
         assert.equal(flags.tunEnabled, ARG_DEFAULTS.tunEnabled);
@@ -39,7 +39,8 @@ describe("buildFeatureFlags", () => {
         assert.equal(buildFeatureFlags({ loadbalance: "true", grouptype: "9" }).groupType, 2);
     });
 
-    it("fakeip 显式传 false 时关闭", () => {
+    it("fakeip 可显式开启或关闭", () => {
+        assert.equal(buildFeatureFlags({ fakeip: "true" }).fakeIPEnabled, true);
         assert.equal(buildFeatureFlags({ fakeip: "false" }).fakeIPEnabled, false);
     });
 
